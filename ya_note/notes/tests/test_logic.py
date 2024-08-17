@@ -14,7 +14,7 @@ User = get_user_model()
 FORM_DATA = {
     'title': 'Новый заголовок',
     'text': 'Новый текст',
-    'slug': 'new-slug'
+    'slug': 'slug'
 }
 
 
