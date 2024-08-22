@@ -1,16 +1,24 @@
 from datetime import datetime, timedelta
+
 import pytest
 from django.test.client import Client
+from django.urls import reverse
+from django.utils import timezone
 
 from news.models import News, Comment
 
 
 NEWS_COUNT_ON_HOME_PAGE = 10
 COMMENT_COUNT_ON_HOME_NEW = 2
-FORM_DATA = {'text': 'Текст комментария'}
-NEW_FORM_DATA = {'text': 'Обновлённый комментарий'}
 COMMENT_TEXT = 'Текст комментария'
 NEW_COMMENT_TEXT = 'Обновлённый комментарий'
+FORM_DATA = {'text': COMMENT_TEXT}
+NEW_FORM_DATA = {'text': NEW_COMMENT_TEXT}
+
+
+@pytest.fixture(autouse=True)
+def enable_db_access_for_all_tests(db):
+    pass
 
 
 @pytest.fixture
@@ -24,9 +32,9 @@ def not_author(django_user_model):
 
 
 @pytest.fixture
-def author_client(author):  # Вызываем фикстуру автора.
+def author_client(author):
     client = Client()
-    client.force_login(author)  # Логиним автора в клиенте.
+    client.force_login(author)
     return client
 
 
@@ -47,11 +55,6 @@ def new():
 
 
 @pytest.fixture
-def new_id(new):
-    return (new.pk,)
-
-
-@pytest.fixture
 def comment(author, new):
     return Comment.objects.create(
         news=new,
@@ -62,27 +65,18 @@ def comment(author, new):
 
 
 @pytest.fixture
-def comment_id(comment):
-    return (comment.pk,)
-
-
-@pytest.fixture
 def comments(new, author):
-    return Comment.objects.bulk_create(
-        [
-            Comment(
-                news=new,
-                author=author,
-                text=f'Комментарий {index}',
-                created=datetime.today() - timedelta(days=index),
-            )
-            for index in range(COMMENT_COUNT_ON_HOME_NEW)
-        ]
-    )
+    for index in range(10):
+        comment = Comment.objects.create(
+            news=new, author=author, text=f'Tекст {index}',
+        )
+        comment.created = timezone.now() + timedelta(days=index)
+        comment.save()
+    return Comment.objects.all()
 
 
 @pytest.fixture
-def news_10(author):
+def news(author):
     return News.objects.bulk_create(
         [
             News(
@@ -93,3 +87,16 @@ def news_10(author):
             for index in range(NEWS_COUNT_ON_HOME_PAGE + 1)
         ]
     )
+
+
+@pytest.fixture()
+def reverse_url(new, comment):
+    return {
+        'home': reverse('news:home'),
+        'login': reverse('users:login'),
+        'logout': reverse('users:logout'),
+        'signup': reverse('users:signup'),
+        'detail': reverse('news:detail', args=(new.pk,)),
+        'edit': reverse('news:edit', args=(comment.pk,)),
+        'delete': reverse('news:delete', args=(comment.pk,))
+    }
