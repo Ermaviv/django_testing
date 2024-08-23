@@ -1,6 +1,7 @@
 from http import HTTPStatus
 
 import pytest
+from django.test.client import Client
 from django.urls import reverse
 from pytest import lazy_fixture as lf
 from pytest_django.asserts import assertRedirects
@@ -8,25 +9,10 @@ from pytest_django.asserts import assertRedirects
 
 @pytest.mark.parametrize(
     'name',
-    ('news:home', 'users:login', 'users:logout', 'users:signup')
+    ('edit', 'delete')
 )
-def test_pages_availability_for_anonymous_user(client, name):
-    url = reverse(name)
-    response = client.get(url)
-    assert response.status_code == HTTPStatus.OK
-
-
-def test_detail_page(client, new, reverse_url):
-    response = client.get(reverse_url['detail'])
-    assert response.status_code == HTTPStatus.OK
-
-
-@pytest.mark.parametrize(
-    'name',
-    ('news:edit', 'news:delete')
-)
-def test_redirection_edit_and_delete_comment(client, name, new):
-    url = reverse(name, args=(new.pk,))
+def test_redirection_edit_and_delete_comment(client, name, new, reverse_url):
+    url = reverse_url[name]
     login_url = reverse('users:login')
     expected_url = f'{login_url}?next={url}'
     response = client.get(url)
@@ -36,16 +22,20 @@ def test_redirection_edit_and_delete_comment(client, name, new):
 @pytest.mark.parametrize(
     'name, parametrized_client, status',
     (
-        ('news:edit', lf('not_author_client'), HTTPStatus.NOT_FOUND),
-        ('news:edit', lf('author_client'), HTTPStatus.OK),
-        ('news:delete', lf('not_author_client'), HTTPStatus.NOT_FOUND),
-        ('news:delete', lf('author_client'), HTTPStatus.OK)
-
-    ),
+        ('edit', lf('not_author_client'), HTTPStatus.NOT_FOUND),
+        ('edit', lf('author_client'), HTTPStatus.OK),
+        ('delete', lf('not_author_client'), HTTPStatus.NOT_FOUND),
+        ('delete', lf('author_client'), HTTPStatus.OK),
+        ('home', lf('client'), HTTPStatus.OK),
+        ('login', lf('client'), HTTPStatus.OK),
+        ('logout', lf('client'), HTTPStatus.OK),
+        ('signup', lf('client'), HTTPStatus.OK),
+        ('detail', lf('client'), HTTPStatus.OK),
+    )
 )
-def test_author_outsider_change_comment(
-        comment, name, parametrized_client, status
+def test_user_change_comment(
+        name, parametrized_client, status, reverse_url
 ):
-    url = reverse(name, args=(comment.pk,))
+    url = reverse_url[name]
     response = parametrized_client.get(url)
     assert response.status_code == status

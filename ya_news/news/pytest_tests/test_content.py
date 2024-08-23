@@ -1,4 +1,4 @@
-from news.pytest_tests.conftest import NEWS_COUNT_ON_HOME_PAGE
+from yanews.settings import NEWS_COUNT_ON_HOME_PAGE
 from news.forms import CommentForm
 
 
@@ -24,9 +24,7 @@ def test_comments_order(client, new, reverse_url):
     assert 'news' in response.context
     news = response.context['news']
     all_comments = news.comment_set.all()
-    '''Собираем временные метки всех новостей.'''
     all_timestamps = [comment.created for comment in all_comments]
-    '''Сортируем временные метки, менять порядок сортировки не надо.'''
     sorted_timestamps = sorted(all_timestamps)
     assert all_timestamps == sorted_timestamps
 

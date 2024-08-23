@@ -5,10 +5,10 @@ from django.test.client import Client
 from django.urls import reverse
 from django.utils import timezone
 
-from news.models import News, Comment
+from news.models import Comment, News
+from yanews.settings import NEWS_COUNT_ON_HOME_PAGE
 
 
-NEWS_COUNT_ON_HOME_PAGE = 10
 COMMENT_COUNT_ON_HOME_NEW = 2
 COMMENT_TEXT = 'Текст комментария'
 NEW_COMMENT_TEXT = 'Обновлённый комментарий'
@@ -72,7 +72,6 @@ def comments(new, author):
         )
         comment.created = timezone.now() + timedelta(days=index)
         comment.save()
-    return Comment.objects.all()
 
 
 @pytest.fixture
