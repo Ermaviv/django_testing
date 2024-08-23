@@ -1,7 +1,6 @@
 from http import HTTPStatus
 
 import pytest
-from django.test.client import Client
 from django.urls import reverse
 from pytest import lazy_fixture as lf
 from pytest_django.asserts import assertRedirects

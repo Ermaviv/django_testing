@@ -1,7 +1,6 @@
 from http import HTTPStatus
 
 import pytest
-from django.urls import reverse
 from pytest import lazy_fixture as lf
 from pytest_django.asserts import assertFormError, assertRedirects
 
@@ -78,7 +77,13 @@ def test_user_change_comment(
     assert (count_before - count_after) == expected_comment_count_change
 
 
-def test_author_can_edit_comment(author_client, comment, new, author, reverse_url):
+def test_author_can_edit_comment(
+        author_client,
+        comment,
+        new,
+        author,
+        reverse_url
+):
     url_to_comments = reverse_url['detail'] + '#comments'
     response = author_client.post(reverse_url['edit'], data=NEW_FORM_DATA)
     assertRedirects(response, url_to_comments)
