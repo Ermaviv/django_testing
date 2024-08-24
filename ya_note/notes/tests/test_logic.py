@@ -26,17 +26,17 @@ class TestLogic(TestData):
         notes_count_before = Note.objects.count()
         response = self.client.post(self.url_add, data=FORM_DATA)
         notes_count_after = Note.objects.count()
-        expected_url = f'{self.login_url}?next={self.url_add}'
+        expected_url = f'{self.url_login}?next={self.url_add}'
         self.assertRedirects(response, expected_url)
         self.assertEqual(notes_count_after, notes_count_before)
 
     def test_user_can_create_note(self):
-        notes_count_before = Note.objects.count()
         Note.objects.all().delete()
+        notes_count_before = Note.objects.count()
         response = self.author_client.post(self.url_add, data=FORM_DATA)
         self.assertRedirects(response, self.url_done)
         notes_count_after = Note.objects.count()
-        self.assertEqual(notes_count_after, notes_count_before)
+        self.assertEqual(notes_count_after - notes_count_before, 1)
         new_note = Note.objects.get()
         self.assertEqual(new_note.title, FORM_DATA['title'])
         self.assertEqual(new_note.text, FORM_DATA['text'])
@@ -44,12 +44,12 @@ class TestLogic(TestData):
         self.assertEqual(new_note.author, self.author)
 
     def test_empty_slug(self):
-        notes_count_before = Note.objects.count()
         Note.objects.all().delete()
+        notes_count_before = Note.objects.count()
         FORM_DATA.pop('slug')
         response = self.author_client.post(self.url_add, data=FORM_DATA)
         notes_count_after = Note.objects.count()
-        self.assertEqual(notes_count_after, notes_count_before)
+        self.assertEqual(notes_count_after - notes_count_before, 1)
         self.assertRedirects(response, self.url_done)
         new_note = Note.objects.get()
         expected_slug = slugify(FORM_DATA['title'])

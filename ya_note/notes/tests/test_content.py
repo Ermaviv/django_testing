@@ -1,5 +1,4 @@
 from django.contrib.auth import get_user
-from django.urls import reverse
 
 from notes.forms import NoteForm
 from notes.tests.conftest import TestData
@@ -15,9 +14,8 @@ class TestContent(TestData):
                 self.assertIs((self.note in note_content), note_in_list)
 
     def test_pages_contains_form(self):
-        for name, arg in self.names_args:
-            with self.subTest(name=name):
-                url = reverse(name, args=arg)
+        for url in self.names_args:
+            with self.subTest(url=url):
                 response = self.author_client.get(url)
                 self.assertIn('form', response.context_data)
                 self.assertIsInstance(response.context_data['form'], NoteForm)

@@ -1,7 +1,6 @@
 from http import HTTPStatus
 
 import pytest
-from django.urls import reverse
 from pytest import lazy_fixture as lf
 from pytest_django.asserts import assertRedirects
 
@@ -12,7 +11,7 @@ from pytest_django.asserts import assertRedirects
 )
 def test_redirection_edit_and_delete_comment(client, name, new, reverse_url):
     url = reverse_url[name]
-    login_url = reverse('users:login')
+    login_url = reverse_url['login']
     expected_url = f'{login_url}?next={url}'
     response = client.get(url)
     assertRedirects(response, expected_url)

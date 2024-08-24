@@ -1,12 +1,12 @@
 from datetime import datetime, timedelta
 
 import pytest
+from django.conf import settings
 from django.test.client import Client
 from django.urls import reverse
 from django.utils import timezone
 
 from news.models import Comment, News
-from yanews.settings import NEWS_COUNT_ON_HOME_PAGE
 
 
 COMMENT_COUNT_ON_HOME_NEW = 2
@@ -83,7 +83,7 @@ def news(author):
                 text='Просто текст.',
                 date=datetime.today() - timedelta(days=index)
             )
-            for index in range(NEWS_COUNT_ON_HOME_PAGE + 1)
+            for index in range(settings.NEWS_COUNT_ON_HOME_PAGE + 1)
         ]
     )
 

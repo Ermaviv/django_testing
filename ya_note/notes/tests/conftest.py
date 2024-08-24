@@ -29,31 +29,31 @@ class TestData(TestCase):
             slug='slug',
             text='Текст заметки'
         )
-        cls.login_url = reverse('users:login')
-        cls.url_delete = reverse('notes:delete', args=(cls.note.slug,))
-        cls.url_edit = reverse('notes:edit', args=(cls.note.slug,))
-        cls.url_list = reverse('notes:list')
-        cls.names_args = (
-            ('notes:add', None),
-            ('notes:edit', (cls.note.slug,))
-        )
         cls.url_add = reverse('notes:add')
         cls.url_done = reverse('notes:success')
+        cls.url_list = reverse('notes:list')
+        cls.url_login = reverse('users:login')
+        cls.url_delete = reverse('notes:delete', args=(cls.note.slug,))
+        cls.url_edit = reverse('notes:edit', args=(cls.note.slug,))
+        cls.url_detail = reverse('notes:detail', args=(cls.note.slug,))
         cls.users_status = (
             (cls.author_client, True),
             (cls.not_author_client, False),
         )
+        cls.names_args = (
+            cls.url_add,
+            cls.url_edit,
+        )
         cls.urls_all = (
-            ('notes:list', None),
-            ('notes:success', None),
-            ('notes:add', None),
-            ('notes:detail', (cls.note.slug,)),
-            ('notes:edit', (cls.note.slug,)),
-            ('notes:delete', (cls.note.slug,)),
+            cls.url_add,
+            cls.url_done,
+            cls.url_list,
+            cls.url_detail,
+            cls.url_edit,
+            cls.url_delete,
         )
         cls.urls_slug = (
-            ('notes:detail', (cls.note.slug,)),
-            ('notes:edit', (cls.note.slug,)),
-            ('notes:delete', (cls.note.slug,)),
+            cls.url_detail,
+            cls.url_edit,
+            cls.url_delete,
         )
-        cls.login_url = reverse('users:login')

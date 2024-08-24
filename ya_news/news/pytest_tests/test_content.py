@@ -1,11 +1,12 @@
-from yanews.settings import NEWS_COUNT_ON_HOME_PAGE
+from django.conf import settings
+
 from news.forms import CommentForm
 
 
 def test_pagination(client, news, reverse_url):
     response = client.get(reverse_url['home'])
     news_count = response.context['object_list'].count()
-    assert news_count == NEWS_COUNT_ON_HOME_PAGE
+    assert news_count == settings.NEWS_COUNT_ON_HOME_PAGE
 
 
 def test_anonymous_client_has_no_form(client, new, reverse_url):
